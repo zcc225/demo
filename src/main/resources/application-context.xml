@@ -20,6 +20,10 @@
 		http://code.alibabatech.com/schema/dubbo        
 		http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
 		
+	<context:component-scan base-package="com.test">
+			<!-- 黑白单  Controller加入 -->
+			<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+		</context:component-scan>
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 			<property name="locations">
 				<list>
@@ -36,18 +40,19 @@
 		<property name="password" value="${password}"/>
 	</bean>
 	
-	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-		<property name="dataSource" ref="dataSource" />
-		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
-	</bean>
-	
-	<bean id="userMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">  
-    <property name="mapperInterface" value="com.test.dao.UserMapper"></property>  
-    <property name="sqlSessionFactory" ref="sqlSessionFactory"></property>  
-</bean>
-
-<bean id="service" class="com.test.service.TestService">
-		<property name="userMapper" ref="userMapper" />
-	</bean>  		
+	<!-- Mybatis 工厂 -->
+		<bean class="org.mybatis.spring.SqlSessionFactoryBean">
+			<property name="dataSource" ref="dataSource"/>
+			<!-- Mybatis的核心配置文件所在位置  -->
+			<property name="configLocation" value="classpath:mybatis-config.xml"/>
+		</bean>
 		
+		<!-- Mybatis的Mapper接口开发的动态 代理  扫描 式 -->
+		<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+			<!-- 基本包 -->
+			<property name="basePackage" value="com.test.dao"/>
+			<!-- 工厂在这里不用再配置 -->
+		</bean>
+
+
 </beans>
